@@ -1,0 +1,22 @@
+{
+  "files.autoSave": "onFocusChange",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "eslint.useFlatConfig": true,
+  "prettier.enable": true,
+  "prettier.requireConfig": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "typescript.tsserver.experimental.enableProjectDiagnostics": true,
+  "errorLens.enabled": true,
+  "errorLens.followCursor": "closestProblem",
+  "errorLens.fontStyleItalic": true,
+  "files.exclude": {
+    "**/.next": true,
+    "**/node_modules": true
+  }
+}

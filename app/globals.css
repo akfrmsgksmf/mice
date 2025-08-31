@@ -1,0 +1,234 @@
+﻿:root {
+  --bg: #ffffff;
+  --text: #1d2433;
+  --muted: #6b7280;
+  --brand: #f3b0bf;
+  --brand-strong: #eaa2b6;
+  --primary: #5fa9c2;
+  --primary-dark: #4f96ae;
+  --accent: #fce7ee;
+  --card: #ffffff;
+  --border: #e5e7eb;
+  --danger: #e11d48;
+  --radius: 14px;
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial,
+    'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+}
+a {
+  color: inherit;
+}
+.container {
+  max-width: 1200px;
+  margin: 28px auto;
+  padding: 0 20px;
+}
+
+/* 상단 단계바 */
+.stepbar {
+  background: var(--accent);
+  border-bottom: 1px solid var(--border);
+}
+.steps {
+  display: flex;
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 14px 20px;
+  color: #7a4654;
+  font-weight: 600;
+}
+.step {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  opacity: 0.6;
+}
+.step.active {
+  opacity: 1;
+}
+.step .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--brand);
+}
+.step.active .dot {
+  background: var(--brand-strong);
+}
+
+/* 레이아웃 */
+.layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 960px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 카드/컨트롤 */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06);
+  padding: 18px;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.select,
+.input {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  min-width: 160px;
+  outline: none;
+}
+.input::placeholder {
+  color: #9ca3af;
+}
+.btn {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.btn:hover {
+  background: var(--primary-dark);
+}
+.btn.ghost {
+  background: #fff;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.badge {
+  background: #eef2ff;
+  color: #3b82f6;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* 서비스 카드 */
+.services {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+@media (max-width: 700px) {
+  .services {
+    grid-template-columns: 1fr;
+  }
+}
+.service-card {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fff;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.service-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+.price {
+  color: #374151;
+  font-weight: 700;
+}
+
+/* 주간 그리드 */
+.week-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 6px 0 12px;
+}
+.week-btn {
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+.week-range {
+  font-weight: 700;
+}
+.week {
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.week-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 8px 8px;
+  min-width: 900px;
+  padding: 8px;
+  background: #fff;
+}
+.week thead th {
+  text-align: center;
+  font-weight: 800;
+  color: #6b7280;
+  padding: 8px 4px;
+  border-bottom: 1px solid var(--border);
+}
+.cell {
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 4px;
+  background: #f0f7ff;
+  color: #1f2937;
+  user-select: none;
+}
+.cell.full {
+  background: #f4f5f7;
+  color: #9ca3af;
+}
+.cell.selected {
+  background: #111827;
+  color: #fff;
+  border-color: #111827;
+}
+
+/* 사이드 */
+.side-title {
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.note {
+  color: var(--muted);
+  font-size: 12px;
+}
+.row {
+  display: flex;
+  gap: 10px;
+}
