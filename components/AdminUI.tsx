@@ -42,7 +42,11 @@ const getWeekStart = (iso: string) => {
   return `${d.getFullYear()}-${mm}-${dd}`;
 };
 const fmtKRTime = (iso: string) =>
-  new Date(iso).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', hour12: false });
+  new Date(iso).toLocaleTimeString('ko-KR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
 const fmtKRDateLabel = (isoDate: string) => {
   const d = new Date(isoDate);
   const m = d.getMonth() + 1;
@@ -53,8 +57,8 @@ const fmtKRDateLabel = (isoDate: string) => {
 const fmtRange = (s?: string, e?: string) => {
   if (!s || !e) return '-';
   const pad = (n: number) => String(n).padStart(2, '0');
-  const a = new Date(s),
-    b = new Date(e);
+  const a = new Date(s);
+  const b = new Date(e);
   return `${pad(a.getHours())}:${pad(a.getMinutes())}~${pad(b.getHours())}:${pad(b.getMinutes())}`;
 };
 
@@ -82,7 +86,7 @@ export default function AdminUI() {
     name: string;
     hourlyPrice: number;
     capacity?: number;
-    photos: string[]; // 업로드 결과 URL 배열
+    photos: string[];
   }>({
     name: '',
     hourlyPrice: 0,
@@ -94,6 +98,9 @@ export default function AdminUI() {
   const [editRooms, setEditRooms] = useState<Room[]>([]);
   const dragFrom = useRef<number | null>(null);
 
+  // 설정 화면의 “유의사항” 입력값 (기존 저장 버튼으로 함께 저장)
+  const [settingsNotice, setSettingsNotice] = useState<string>('');
+
   // 초기 설정 로드
   useEffect(() => {
     (async () => {
@@ -102,7 +109,7 @@ export default function AdminUI() {
     })();
   }, []);
 
-  // 일간 예약/블랙아웃 로드(리스트용)
+  // 일간 예약/블랙아웃 로드
   useEffect(() => {
     (async () => {
       const list = await getJSON<Booking[]>(`/api/bookings?date=${date}`);
@@ -189,7 +196,7 @@ export default function AdminUI() {
     setView('roomSettings');
   }
 
-  // ▶ 사진 업로드
+  // 사진 업로드
   async function uploadFiles(fileList: FileList | null) {
     if (!fileList || fileList.length === 0) return;
     const fd = new FormData();
@@ -227,12 +234,14 @@ export default function AdminUI() {
     setView('preview');
   }
 
-  // 서비스 일람/편집(테이블)
+  // 서비스 일람/편집(테이블) 열기
   function openSettingsIndex() {
     if (!config) return;
     setEditRooms(config.rooms.map((r) => ({ ...r })));
+    setSettingsNotice(config.customerNotice ?? '');
     setView('settingsIndex');
   }
+
   function updateEditRoom(idx: number, patch: Partial<Room>) {
     setEditRooms((prev) => prev.map((r, i) => (i === idx ? { ...r, ...patch } : r)));
   }
@@ -275,6 +284,8 @@ export default function AdminUI() {
       return arr;
     });
   }
+
+  // 설정 저장: rooms + customerNotice 동시 저장
   async function saveSettingsIndex() {
     for (const r of editRooms) {
       if (!r.name.trim()) {
@@ -287,7 +298,10 @@ export default function AdminUI() {
       }
       if (!Array.isArray(r.photos)) r.photos = [];
     }
-    const nextCfg = await patchJSON<Config>('/api/config', { rooms: editRooms });
+    const nextCfg = await patchJSON<Config>('/api/config', {
+      rooms: editRooms,
+      customerNotice: settingsNotice,
+    });
     setConfig(nextCfg);
     alert('저장되었습니다.');
     setView('list');
@@ -515,7 +529,6 @@ export default function AdminUI() {
               <div className="help">여러 장 선택 가능 • JPG/PNG 추천</div>
             </div>
 
-            {/* 업로드된 사진 미리보기 + 삭제 */}
             {form.photos && form.photos.length > 0 && (
               <div className="grid">
                 {form.photos.map((src, idx) => (
@@ -541,7 +554,7 @@ export default function AdminUI() {
         </div>
       )}
 
-      {/* 서비스 일람/편집(테이블) */}
+      {/* 서비스 일람/편집(테이블) + 유의사항 입력칸 */}
       {view === 'settingsIndex' && (
         <div className="listedit">
           <div className="pv-head">
@@ -620,6 +633,21 @@ export default function AdminUI() {
             <button className="btn ghost" onClick={addService}>
               + 서비스 추가
             </button>
+          </div>
+
+          {/* 맨 아래: 예약 시 유의사항 입력칸 */}
+          <div style={{ marginTop: 16, borderTop: '1px solid #e5e7eb', paddingTop: 12 }}>
+            <div style={{ fontWeight: 900, marginBottom: 8 }}>예약 시 유의사항</div>
+            <p style={{ color: '#6b7280', marginBottom: 8 }}>
+              고객 예약 화면의 “예약 시 유의사항” 박스에 표시됩니다. 줄바꿈이 그대로 적용됩니다.
+            </p>
+            <textarea
+              className="input"
+              style={{ minHeight: 160, resize: 'vertical' }}
+              value={settingsNotice}
+              onChange={(e) => setSettingsNotice(e.target.value)}
+              placeholder={`예)\n· 예약은 시작 10분 전에 도착해 주세요.\n· 이용 시간 내 퇴실 부탁드립니다.\n· 음식물 반입은 불가합니다.`}
+            />
           </div>
         </div>
       )}
@@ -818,7 +846,7 @@ export default function AdminUI() {
           background: #f9fafb;
           border-radius: 10px;
           padding: 8px 10px;
-          cursor: pointer;
+          cursor: pointer.;
         }
         .week {
           overflow: auto;

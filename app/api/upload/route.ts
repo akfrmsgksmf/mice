@@ -1,13 +1,18 @@
 // app/api/upload/route.ts
 import { writeFile } from '@/lib/fs';
-import { NextResponse } from 'next/server';
-import crypto from 'node:crypto';
-import path from 'node:path';
+import crypto from 'crypto';
+import { NextRequest, NextResponse } from 'next/server';
+import path from 'path';
 
-export async function POST(req: Request) {
+// ✅ Node API를 쓰므로 런타임을 nodejs로 고정
+export const runtime = 'nodejs';
+// (선택) 빌드 캐시/정적 판단 방지
+export const dynamic = 'force-dynamic';
+
+export async function POST(req: NextRequest) {
   try {
     const form = await req.formData();
-    const files = form.getAll('file');
+    const files = form.getAll('file'); // input name="file" (여러 개 가능)
 
     const uploadDir = 'public/uploads'; // 공개 경로
     const urls: string[] = [];
@@ -15,21 +20,20 @@ export async function POST(req: Request) {
     for (const item of files) {
       if (!(item instanceof File)) continue;
 
-      // 파일 → Buffer
-      const arrayBuffer = await item.arrayBuffer();
-      const buffer = Buffer.from(arrayBuffer);
+      // 브라우저 File → ArrayBuffer → Buffer
+      const ab = await item.arrayBuffer();
+      // 둘 중 하나 써도 됩니다. (TS 친화적으로 Uint8Array 추천)
+      const u8 = new Uint8Array(ab);
+      // const buffer = Buffer.from(ab);
 
-      // 이름/확장자
       const orig = item.name || 'image';
       const ext = path.extname(orig) || '.jpg';
       const rand = crypto.randomUUID();
       const filename = `${Date.now()}-${rand}${ext}`;
 
-      // 실제 저장
       const dest = path.join(uploadDir, filename);
-      await writeFile(dest, buffer); // <-- writeFile 시그니처와 타입 일치
+      await writeFile(dest, u8);
 
-      // 브라우저 접근 경로
       urls.push(`/uploads/${filename}`);
     }
 

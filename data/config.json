@@ -23,6 +23,7 @@
       "name": "803호",
       "hourlyPrice": 0,
       "photos": [],
+      "capacity": 2,
       "description": ""
     },
     {
@@ -30,6 +31,7 @@
       "name": "신규 서비스 4",
       "hourlyPrice": 0,
       "photos": [],
+      "capacity": 2,
       "description": ""
     },
     {
@@ -37,6 +39,7 @@
       "name": "신규 서비스 5",
       "hourlyPrice": 0,
       "photos": [],
+      "capacity": 2,
       "description": ""
     },
     {
@@ -44,8 +47,9 @@
       "name": "신규 서비스 6",
       "hourlyPrice": 0,
       "photos": [],
+      "capacity": 4,
       "description": ""
     }
   ],
-  "customerNotice": ""
+  "customerNotice": "ㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎㅎ"
 }

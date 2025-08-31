@@ -256,8 +256,6 @@ export default function RoomBookingUI() {
   }
 
   const currentRoom = useMemo(() => config?.rooms.find((r) => r.id === roomId), [config, roomId]);
-  const sidebarPrimaryBtnDisabled =
-    !selected || selected.hasBooked || !name.trim() || !phone.trim();
 
   // 방을 카테고리로 그룹핑 + 이름 가나다 정렬
   const grouped = useMemo(() => {
@@ -278,7 +276,7 @@ export default function RoomBookingUI() {
     order.forEach((cat) => {
       if (map.has(cat)) out.push({ cat, rooms: map.get(cat)! });
     });
-    // 기타 카테고리(혹시 향후 추가된다면) 뒤에 붙이기
+    // 기타 카테고리 뒤에 붙이기
     for (const [cat, rooms] of map.entries()) {
       if (!order.includes(cat)) out.push({ cat, rooms });
     }
@@ -303,11 +301,11 @@ export default function RoomBookingUI() {
 
       <div className="container">
         <div className="layout">
+          {/* 좌측: 메인 카드들 */}
           <div>
             <div className="card" ref={servicesRef} style={{ minHeight: 360 }}>
               <div className="controls" style={{ justifyContent: 'space-between' }}>
                 <div style={{ fontWeight: 800 }}>서비스 선택</div>
-                {/* 오른쪽 현재시간 배지 제거됨 */}
               </div>
 
               {step === 0 && (
@@ -315,7 +313,7 @@ export default function RoomBookingUI() {
                   {cfgLoading && <div>설정을 불러오는 중...</div>}
                   {!cfgLoading && (
                     <>
-                      {/* 수용 인원 필터 UI 제거 → 카테고리 그룹 렌더 */}
+                      {/* 카테고리 그룹 렌더 */}
                       <div className="categories">
                         {grouped.map(({ cat, rooms }) => {
                           const open = catOpen[cat] ?? true;
@@ -361,7 +359,6 @@ export default function RoomBookingUI() {
                                           <div className="price">
                                             ₩{r.hourlyPrice.toLocaleString()} / 시간
                                           </div>
-                                          {/* 필요시 표시: {r.capacity && <div className="badge soft">{r.capacity}인 기준</div>} */}
                                         </div>
                                         <div className="service-action">
                                           <button
@@ -464,9 +461,8 @@ export default function RoomBookingUI() {
                         </tr>
                       </thead>
                       <tbody>
-                        {timeIndex.map(({ i, start, end }) => (
+                        {timeIndex.map(({ i }) => (
                           <tr key={i} style={{ height: 52 }}>
-                            {/* 시간 열 없음 */}
                             {weekDates.map((d) => {
                               const av = weekAvail[d];
                               const cell = av?.slots[i];
@@ -545,85 +541,90 @@ export default function RoomBookingUI() {
                     예상 총액: <b>₩{price.toLocaleString('ko-KR')}</b>
                   </div>
                 </div>
-                <div className="row" style={{ marginTop: 16 }}>
-                  <button className="btn ghost" onClick={() => setStep(1)}>
-                    〈 시간 다시 선택
-                  </button>
-                  <button
-                    className="btn"
-                    onClick={submit}
-                    disabled={!selected || selected.hasBooked || !name || !phone}
-                  >
-                    지금 예약
-                  </button>
-                </div>
+                {/* ⛳️ 기존 버튼은 제거하고(요청사항), 오른쪽 사이드바 하단으로 이동 */}
               </div>
             )}
           </div>
 
-          {/* 우측 고정 입력(항상 표시) */}
-          <div className="card sticky-card">
-            <div className="side-title">고객 정보</div>
-            <input
-              className="input lg"
-              placeholder="이름 (필수)"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <div style={{ height: 10 }} />
-            <input
-              className="input lg"
-              placeholder="연락처 (필수)"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
-            <div style={{ height: 10 }} />
-            <textarea
-              className="input lg"
-              placeholder="메모 (선택)"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={4}
-            />
-            <div className="note" style={{ marginTop: 12 }}>
-              · 입력 정보는 예약 단계 전반에서 유지됩니다.
+          {/* 우측: 고정 사이드(고객 정보 + 버튼 + 유의사항) */}
+          <div>
+            <div className="card sticky-card">
+              <div className="side-title">고객 정보</div>
+              <input
+                className="input lg"
+                placeholder="이름 (필수)"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <div style={{ height: 10 }} />
+              <input
+                className="input lg"
+                placeholder="연락처 (필수)"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+              />
+              <div style={{ height: 10 }} />
+              <textarea
+                className="input lg"
+                placeholder="메모 (선택)"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={4}
+              />
+              <div className="note" style={{ marginTop: 12 }}>
+                · 입력 정보는 예약 단계 전반에서 유지됩니다.
+              </div>
+
+              <div
+                style={{
+                  marginTop: 16,
+                  borderTop: '1px solid var(--border)',
+                  paddingTop: 12,
+                  lineHeight: 1.9,
+                }}
+              >
+                <div style={{ fontWeight: 800, marginBottom: 8 }}>요약</div>
+                <div>
+                  서비스: <b>{currentRoom?.name ?? '-'}</b>
+                </div>
+                <div>
+                  시작 시간: <b>{selected?.startIso ? fmtKRTime(selected.startIso) : '-'}</b>
+                </div>
+                <div>
+                  종료 시간: <b>{selected?.endIso ? fmtKRTime(selected.endIso) : '-'}</b>
+                </div>
+                <div>
+                  총 이용시간: <b>{selected?.minutes ?? 0}분</b>
+                </div>
+                <div>
+                  예상금액: <b>₩{price.toLocaleString('ko-KR')}</b>
+                </div>
+
+                {/* ⛳️ 요청: 세부사항 버튼을 이 위치로 이동 (고객 단계에서만 노출) */}
+                {step === 2 && (
+                  <div className="row" style={{ marginTop: 12, gap: 8 }}>
+                    <button className="btn ghost" onClick={() => setStep(1)}>
+                      〈 시간 다시 선택
+                    </button>
+                    <button
+                      className="btn"
+                      onClick={submit}
+                      disabled={!selected || selected.hasBooked || !name.trim() || !phone.trim()}
+                    >
+                      지금 예약
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
 
-            <div
-              style={{
-                marginTop: 16,
-                borderTop: '1px solid var(--border)',
-                paddingTop: 12,
-                lineHeight: 1.9,
-              }}
-            >
-              <div style={{ fontWeight: 800, marginBottom: 8 }}>요약</div>
-              <div>
-                서비스: <b>{currentRoom?.name ?? '-'}</b>
-              </div>
-              <div>
-                시작 시간: <b>{selected?.startIso ? fmtKRTime(selected.startIso) : '-'}</b>
-              </div>
-              <div>
-                종료 시간: <b>{selected?.endIso ? fmtKRTime(selected.endIso) : '-'}</b>
-              </div>
-              <div>
-                총 이용시간: <b>{selected?.minutes ?? 0}분</b>
-              </div>
-              <div>
-                예상금액: <b>₩{price.toLocaleString('ko-KR')}</b>
-              </div>
-              <div className="row" style={{ marginTop: 12, gap: 8 }}>
-                <button className="btn ghost" onClick={clearSel}>
-                  선택 해제
-                </button>
-                <button
-                  className="btn"
-                  onClick={() => setStep(2)}
-                  disabled={!selected || selected.hasBooked}
-                >
-                  예약 단계로
-                </button>
+            {/* ⛳️ 요청: 예약 시 유의사항 박스 추가 (관리자 설정 customerNotice 연동) */}
+            <div className="card" style={{ marginTop: 12 }}>
+              <div className="side-title">예약 시 유의사항</div>
+              <div className="note" style={{ whiteSpace: 'pre-wrap' }}>
+                {config?.customerNotice && config.customerNotice.trim().length > 0
+                  ? config.customerNotice
+                  : '관리자에서 유의사항을 설정하면 여기에 표시됩니다.'}
               </div>
             </div>
           </div>
@@ -838,7 +839,7 @@ export default function RoomBookingUI() {
         }
         .mini {
           font-size: 12px;
-          color: var(--muted);
+          color: #6b7280;
         }
 
         .selected-photos {
