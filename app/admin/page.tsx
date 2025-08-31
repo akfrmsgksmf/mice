@@ -1,5 +1,11 @@
+'use client';
+
 import AdminUI from '@/components/AdminUI';
 
 export default function Page() {
-  return <AdminUI />;
+  return (
+    <main>
+      <AdminUI />
+    </main>
+  );
 }
